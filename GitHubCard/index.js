@@ -2,6 +2,15 @@
            (replacing the palceholder with your Github name):
            https://api.github.com/users/<your name>
 */
+let gitHubData = axios
+  .get("https://api.github.com/users/classic-username")
+  .then(response => {
+    console.log(response);
+    return new cardCreate(response);
+  })
+  .catch(error => {
+    console.log("error", error);
+  });
 
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
@@ -24,7 +33,66 @@
           user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+const followersArray = [
+  "tetondan",
+  "dustinmyers",
+  "justsml",
+  "luishrd",
+  "bigknell"
+];
+
+let gitpage = "https://api.github.com/users/";
+
+followersArray.forEach(cv => {
+  axios
+    .get(gitpage + cv)
+    .then(response => {
+      return new cardCreate(response);
+    })
+    .catch(error => {
+      console.log("error", error);
+    });
+});
+
+let nativeCardsDiv = document.querySelector(".cards");
+let cardCreate = function(obj) {
+  let firstDiv = document.createElement("div");
+  firstDiv.classList.add("card");
+  nativeCardsDiv.appendChild(firstDiv);
+  let firstImg = document.createElement("IMG");
+  firstImg.setAttribute("src", `${obj.data.avatar_url}`);
+  firstDiv.appendChild(firstImg);
+  let firstDivChild = document.createElement("div");
+  firstDivChild.classList.add("card-info");
+  firstDiv.appendChild(firstDivChild);
+  let h3 = document.createElement("h3");
+  h3.classList.add("name");
+  h3.textContent = `${obj.data.name}`;
+  firstDivChild.appendChild(h3);
+  let pUser = document.createElement("p");
+  pUser.classList.add("username");
+  pUser.textContent = `${obj.data.login}`;
+  firstDivChild.appendChild(pUser);
+  let pLoc = document.createElement("p");
+  pLoc.textContent = `Location: ${obj.data.location}`;
+  firstDivChild.appendChild(pLoc);
+  let pProfile = document.createElement("p");
+  pProfile.textContent = "Profile:";
+  firstDivChild.appendChild(pProfile);
+  let pProfAnchor = document.createElement("a");
+  pProfAnchor.href = `${obj.data.html_url}`;
+  pProfAnchor.textContent = `${obj.data.html_url}`;
+  pProfile.appendChild(pProfAnchor);
+  let pFolrs = document.createElement("p");
+  pFolrs.textContent = `Followers: ${obj.data.followers}`;
+  firstDivChild.appendChild(pFolrs);
+  let pFolng = document.createElement("p");
+  pFolng.textContent = `Following: ${obj.data.following}`;
+  firstDivChild.appendChild(pFolng);
+  let pBio = document.createElement("p");
+  pBio.textContent = `Bio: ${obj.data.bio}`;
+  firstDivChild.appendChild(pFolng);
+};
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
@@ -53,3 +121,37 @@ const followersArray = [];
   luishrd
   bigknell
 */
+
+const myFollArray = [];
+
+// myFollArray.forEach(cv => {
+//   axios
+//     .get('https://api.github.com/users/Classic-username/followers')
+//     .then(result => {
+
+//     })
+//     .then(result => {
+//       console.log(myFollArray)
+//     })
+// })
+
+// STRETCH IS HERE YAAAAAAAA
+
+let myFolGrab = axios
+  .get("https://api.github.com/users/Classic-username/followers")
+  .then(result => {
+    console.log(result);
+    return result.data.forEach(cv => {
+      axios
+        .get(gitpage + cv.login)
+        .then(result => {
+          return new cardCreate(result);
+        })
+        .catch(CAUGHT => {
+          console.log("error", caught);
+        });
+    });
+  })
+  .catch(DENIED => {
+    console.log("DENIED", DENIED);
+  });
